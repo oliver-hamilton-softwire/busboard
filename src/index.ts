@@ -1,0 +1,102 @@
+let readlineSync = require('readline-sync');
+
+const APP_KEY: string = 'e92dcffed66741b09040d3ff8bdc58c7';
+const NUMBER_OF_STOPS: number = 2;
+const BUSES_PER_STOP: number = 5;
+
+class StopData {
+    private name: string;
+    private distance: number;
+    private stopId: number;
+
+    public constructor(name: string, distance: number, stopId: number) {
+        this.name = name;
+        this.distance = distance;
+        this.stopId = stopId;
+    }
+
+    public async getNextArrivals(): Promise<ArrivalData[]> {
+        const nextBuses = await getUpcomingBuses(this.stopId);
+        const arrvials = [];
+
+        for (var i = 0; i < BUSES_PER_STOP; i++) {
+            let nextBus = nextBuses[i];
+
+            arrvials.push(new ArrivalData(nextBus.lineId, nextBus.destinationName, nextBus.arrivalTime));
+        }
+
+        return arrvials;
+    }
+}
+
+class ArrivalData {
+    private lineId: number;
+    private destinationName: string;
+    private arrivalTime: Date;
+    public constructor(lineId: number, destinationName: string, arrivalTime: Date) {
+        this.lineId = lineId;
+        this.destinationName = destinationName;
+        this.arrivalTime = arrivalTime;
+    }
+}
+
+const getPostcodeData = async (postcode: string) => {
+    const postcodeResponse = await fetch(`https://api.postcodes.io/postcodes/${postcode}`);
+    return await postcodeResponse.json();
+}
+
+const getNearestStops = async (lat: number, long: number) => {
+    const stopsResponse = await fetch(`https://api.tfl.gov.uk/StopPoint/?lat=${lat}&lon=${long}&stopTypes=NaptanPublicBusCoachTram&app_key=${APP_KEY}`);
+    const stopsJson = await stopsResponse.json();
+    return stopsJson.stopPoints.slice(0, NUMBER_OF_STOPS);
+}
+
+const getUpcomingBuses = async (stopId: number) => {
+    const nextBusesResponse = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopId}/Arrivals?app_key=${APP_KEY}`);
+    const nextBusesJson = await nextBusesResponse.json();
+    nextBusesJson.sort((a: any, b: any) => new Date(a.expectedArrival).getTime() - new Date(b.expectedArrival).getTime());
+    return nextBusesJson;
+}
+
+const fetchData = async () => {
+    try {
+        const postcode: string = readlineSync.question('Enter postcode: ');
+        const postcodeJson = await getPostcodeData(postcode);
+        const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude);
+
+        var stopJSON = [];
+
+        for (const stop of stops) {
+            var stopData = {
+                name: stop.commonName,
+                distance: stop.distance,
+                buses: []
+            };
+            //console.log(`Buses at ${stop.commonName} (${Math.round(stop.distance)} metres away):`);
+            const nextBuses = await getUpcomingBuses(stop.naptanId);
+
+            for (const busJson of nextBuses.slice(0, BUSES_PER_STOP)) {
+                const busDate: Date = new Date(busJson.expectedArrival);
+
+                var busData = {
+                    lineId: busJson.lineId,
+                    destinationName: busJson.destinationName,
+                    arrivalTime: busDate
+                }
+
+                stopData.buses.push(busData);
+                //console.log(`Line ${busJson.lineId} to ${busJson.destinationName} expected at ${busDate.toTimeString().slice(0,8)}`);
+            }
+            stopJSON.push(stopData);
+
+            return stopJSON;
+            //console.log();
+        }
+    } catch (error) {
+        console.error(error);
+    } finally {
+        console.log("Request complete");
+    }
+}
+
+fetchData();
