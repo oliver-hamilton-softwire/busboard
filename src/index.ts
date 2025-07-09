@@ -1,10 +1,8 @@
-let readlineSync = require('readline-sync');
-
 const APP_KEY: string = 'e92dcffed66741b09040d3ff8bdc58c7';
 const NUMBER_OF_STOPS: number = 2;
 const BUSES_PER_STOP: number = 5;
 
-class StopData {
+export class StopData {
     private name: string;
     private distance: number;
     private stopId: number;
@@ -19,24 +17,44 @@ class StopData {
         const nextBuses = await getUpcomingBuses(this.stopId);
         const arrvials = [];
 
-        for (var i = 0; i < BUSES_PER_STOP; i++) {
+        for (var i = 0; i < BUSES_PER_STOP && i < nextBuses.length; i++) {
             let nextBus = nextBuses[i];
 
-            arrvials.push(new ArrivalData(nextBus.lineId, nextBus.destinationName, nextBus.arrivalTime));
+            arrvials.push(new ArrivalData(nextBus.lineId, nextBus.destinationName, nextBus.expectedArrival));
         }
 
         return arrvials;
     }
+
+    public getName(): string {
+        return this.name;
+    }
+
+    public getDistance(): number {
+        return this.distance;
+    }
 }
 
-class ArrivalData {
+export class ArrivalData {
     private lineId: number;
     private destinationName: string;
     private arrivalTime: Date;
     public constructor(lineId: number, destinationName: string, arrivalTime: Date) {
         this.lineId = lineId;
         this.destinationName = destinationName;
-        this.arrivalTime = arrivalTime;
+        this.arrivalTime = new Date(arrivalTime);
+    }
+
+    public getLineId(): number {
+        return this.lineId;
+    }
+
+    public getDestinationName(): string {
+        return this.destinationName;
+    }
+
+    public getArrivalTime(): Date {
+        return this.arrivalTime;
     }
 }
 
@@ -58,40 +76,38 @@ const getUpcomingBuses = async (stopId: number) => {
     return nextBusesJson;
 }
 
-const fetchData = async () => {
+export const fetchData = async (postcode: string): Promise<any> => {
     try {
-        const postcode: string = readlineSync.question('Enter postcode: ');
+        //const postcode: string = readlineSync.question('Enter postcode: ');
         const postcodeJson = await getPostcodeData(postcode);
         const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude);
 
-        var stopJSON = [];
+        var stopJSON: StopData[] = [];
 
         for (const stop of stops) {
-            var stopData = {
-                name: stop.commonName,
-                distance: stop.distance,
-                buses: []
-            };
+            var stopData: StopData = new StopData(stop.commonName, stop.distance, stop.naptanId);
+
             //console.log(`Buses at ${stop.commonName} (${Math.round(stop.distance)} metres away):`);
-            const nextBuses = await getUpcomingBuses(stop.naptanId);
+            // const nextBuses = await getUpcomingBuses(stop.naptanId);
 
-            for (const busJson of nextBuses.slice(0, BUSES_PER_STOP)) {
-                const busDate: Date = new Date(busJson.expectedArrival);
-
-                var busData = {
-                    lineId: busJson.lineId,
-                    destinationName: busJson.destinationName,
-                    arrivalTime: busDate
-                }
-
-                stopData.buses.push(busData);
-                //console.log(`Line ${busJson.lineId} to ${busJson.destinationName} expected at ${busDate.toTimeString().slice(0,8)}`);
-            }
+            // for (const busJson of nextBuses.slice(0, BUSES_PER_STOP)) {
+            //     const busDate: Date = new Date(busJson.expectedArrival);
+            //
+            //     var busData = {
+            //         lineId: busJson.lineId,
+            //         destinationName: busJson.destinationName,
+            //         arrivalTime: busDate
+            //     }
+            //
+            //     stopData.buses.push(busData);
+            //     //console.log(`Line ${busJson.lineId} to ${busJson.destinationName} expected at ${busDate.toTimeString().slice(0,8)}`);
+            // }
             stopJSON.push(stopData);
 
-            return stopJSON;
+            // return stopData;
             //console.log();
         }
+        return stopJSON;
     } catch (error) {
         console.error(error);
     } finally {
@@ -99,4 +115,4 @@ const fetchData = async () => {
     }
 }
 
-fetchData();
+//fetchData();
