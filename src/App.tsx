@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./index";
 
 const StopComponent = async (stopData: StopData): Promise<React.ReactElement> => {
@@ -9,7 +9,7 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
     <p>{stopData.getName()}</p>
     <p>{stopData.getDistance()}</p>
     {arrivals.map(arrival => {
-    return <p>{arrival.getLineId()}</p>
+    return <p>{arrival.getLineId()} {arrival.getDestinationName()} {arrival.getArrivalTime().toTimeString().slice(0, 8)}</p>
     }
     )}
   </>
@@ -20,27 +20,31 @@ function App(): React.ReactElement {
   const [tableData, setTableData] = useState<string>("");
   const [stops, setStops] = useState<React.ReactElement[]>([]);
 
+  useEffect(() => {
+    if (postcode !== "") {
+      setTimeout(() => {
+        getBuses(postcode);
+      }, 5000)
+    }
+  })
+
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
-    const data = await getBuses(postcode);
-    setTableData(data);
+    await getBuses(postcode);
+    //const data = await getBuses(postcode);
+    //setTableData(data);
   }
 
-  async function getBuses(postcode: string): Promise<string> {
+  async function getBuses(postcode: string): Promise<void> {
+    // console.log(postcode);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
     const stopData: StopData[] = await fetchData(postcode);
     const stopComponents: React.ReactElement[] = [];
     var outputString = "";
     for (var _stop of stopData) {
-      outputString += `Stop ${_stop.getName()} that is ${_stop.getDistance()} metres away\n`
-      const buses: ArrivalData[] = await _stop.getNextArrivals();
-      for (var _bus of buses) {
-        outputString += `Line ${_bus.getLineId()} to ${_bus.getDestinationName()} expected at ${_bus.getArrivalTime().toTimeString().slice(0,8)}\n`
-      }
       stopComponents.push(await StopComponent(_stop));
     }
     setStops(stopComponents);
-    return outputString;
   }
 
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
