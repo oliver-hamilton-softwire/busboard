@@ -8,10 +8,17 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
   return <>
     <p>{stopData.getName()}</p>
     <p>{stopData.getDistance()}</p>
+    <table>
+      <tr>
+        <th>Line ID</th>
+        <th>Destination</th>
+        <th>Expected arrival time</th>
+      </tr>
     {arrivals.map(arrival => {
-    return <p>{arrival.getLineId()} {arrival.getDestinationName()} {arrival.getArrivalTime().toTimeString().slice(0, 8)}</p>
+          return <tr><td>{arrival.getLineId()}</td> <td>{arrival.getDestinationName()}</td> <td>{arrival.getArrivalTime().toTimeString().slice(0, 8)}</td></tr>
     }
     )}
+    </table>
   </>
 }
 
