@@ -29,6 +29,7 @@ function App(): React.ReactElement {
   const [tableData, setTableData] = useState<string>("");
   const [stops, setStops] = useState<React.ReactElement[]>([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const interval: any = useRef(undefined);
 
   useEffect(() => {
@@ -39,6 +40,7 @@ function App(): React.ReactElement {
 
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
+    setLoading(true);
     // Get the latest buses, and set up a timer to update
     clearInterval(interval.current);
     const error = await getBuses(postcode);
@@ -48,6 +50,7 @@ function App(): React.ReactElement {
         getBuses(postcode);
       }, 5000)
     }
+    setLoading(false);
     // getBuses(postcode);
     //const data = await getBuses(postcode);
     //setTableData(data);
@@ -82,13 +85,16 @@ function App(): React.ReactElement {
     </center>
     <center>
       <div style={{padding: "5px"}} className={"container"}>
-        <div className={"row justify-content-center"} style={{padding: "10px"}}>
-        {stops.map((stop, index) =>
-              <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
-                  {stop}
-              </div>
-        )}
-        </div>
+          {
+              loading ? <p>Loading...</p> :
+                  <div className={"row justify-content-center"} style={{padding: "10px"}}>
+                      {stops.map((stop, index) =>
+                          <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
+                              {stop}
+                          </div>
+                      )}
+                  </div>
+          }
       </div>
     </center>
   </>
