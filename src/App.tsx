@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ArrivalData, fetchData, StopData} from "./index";
+import {ArrivalData, fetchData, StopData} from "./utils";
 
 const StopComponent = async (stopData: StopData): Promise<React.ReactElement> => {
 
