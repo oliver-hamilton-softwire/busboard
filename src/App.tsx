@@ -6,19 +6,20 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
   const arrivals = await stopData.getNextArrivals();
 
   return <>
-    <p>{stopData.getName()}</p>
-    <p>{stopData.getDistance()}</p>
-    <table>
-      <tr>
-        <th>Line ID</th>
-        <th>Destination</th>
-        <th>Expected arrival time</th>
-      </tr>
-    {arrivals.map(arrival => {
-          return <tr><td>{arrival.getLineId()}</td> <td>{arrival.getDestinationName()}</td> <td>{arrival.getArrivalTime().toTimeString().slice(0, 8)}</td></tr>
-    }
-    )}
-    </table>
+    <div style={{backgroundColor: "red", width: "25%", height: "40%"}}>
+      <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from [POSTCODE]</p>
+      <table>
+        <tr>
+          <th>Line ID</th>
+          <th>Destination</th>
+          <th>Expected arrival time</th>
+        </tr>
+      {arrivals.map(arrival => {
+            return <tr><td>{arrival.getLineId()}</td> <td>{arrival.getDestinationName()}</td> <td>{arrival.getArrivalTime().toTimeString().slice(0, 8)}</td></tr>
+      }
+      )}
+      </table>
+    </div>
   </>
 }
 
@@ -31,6 +32,7 @@ function App(): React.ReactElement {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     // Get the latest buses, and set up a timer to update
     getBuses(postcode);
+
     if (postcode !== "") {
       setInterval(() => {
         getBuses(postcode);
@@ -59,16 +61,21 @@ function App(): React.ReactElement {
   }
 
   return <>
-    <h1> BusBoard </h1>
-    <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode}/>
-      <input type="submit" value="Submit"/>
-    </form>
-    {stops.map(stop =>
-      stop
-    )}
-    {JSON.stringify(tableData, null, 4) /* this will just render the string - try creating a table 'dynamically'! */}
+    <center>
+      <h1> BusBoard</h1>
+      <form action="" onSubmit={formHandler}>
+        <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode </label>
+        <input style={{display: "block"}} type="text" id="postcodeInput" onChange={updatePostcode}/>
+        <input type="submit" value="Submit"/>
+      </form>
+    </center>
+    <center>
+      <div style={{padding: "5px"}}>
+        {stops.map(stop =>
+            stop
+        )}
+      </div>
+    </center>
   </>
 }
 
