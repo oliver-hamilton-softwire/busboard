@@ -33,6 +33,10 @@ export class StopData {
     public getDistance(): number {
         return this.distance;
     }
+
+    public getStopId(): number {
+        return this.stopId;
+    }
 }
 
 export class ArrivalData {
