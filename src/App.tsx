@@ -27,7 +27,7 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<string>("");
-  const [stops, setStops] = useState<React.ReactElement[]>([]);
+    const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const interval: any = useRef(undefined);
@@ -61,10 +61,9 @@ function App(): React.ReactElement {
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
     const [stopData, error] = await fetchData(postcode);
     setError(error);
-    const stopComponents: React.ReactElement[] = [];
-    var outputString = "";
+    const stopComponents: Map<number, React.ReactElement> = stops;
     for (var _stop of stopData) {
-      stopComponents.push(await StopComponent(_stop));
+      stopComponents.set(_stop.getStopId(), await StopComponent(_stop));
     }
     setStops(stopComponents);
     return error;
@@ -88,7 +87,7 @@ function App(): React.ReactElement {
           {
               loading ? <p>Loading...</p> :
                   <div className={"row justify-content-center"} style={{padding: "10px"}}>
-                      {stops.map((stop, index) =>
+                      {Array.from(stops.values()).map((stop, index) =>
                           <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
                               {stop}
                           </div>
