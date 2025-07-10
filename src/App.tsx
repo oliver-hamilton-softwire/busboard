@@ -25,10 +25,10 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<string>("");
-  const [stops, setStops] = useState<React.ReactElement[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const interval: any = useRef(undefined);
+  const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
 
   useEffect(() => {
     if (error !== "") {
@@ -59,10 +59,10 @@ function App(): React.ReactElement {
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
     const [stopData, error] = await fetchData(postcode);
     setError(error);
-    const stopComponents: React.ReactElement[] = [];
+    const stopComponents: Map<number, React.ReactElement> = stops;
     var outputString = "";
     for (var _stop of stopData) {
-      stopComponents.push(await StopComponent(_stop));
+      stopComponents.set(_stop.getStopId(), await StopComponent(_stop));
     }
     setStops(stopComponents);
     return error;
@@ -77,13 +77,12 @@ function App(): React.ReactElement {
     <form action="" onSubmit={formHandler}>
       <label htmlFor="postcodeInput"> Postcode: </label>
       <input type="text" id="postcodeInput" onChange={updatePostcode}/>
-      <input type="submit" value="Submit"/>
+      <input type="submit" value="Add"/>
     </form>
     {loading ?
      <p>Loading...</p> :
-    stops
+    Array.from(stops.values())
     }
-    {JSON.stringify(tableData, null, 4) /* this will just render the string - try creating a table 'dynamically'! */}
   </>
 }
 
