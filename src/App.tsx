@@ -45,11 +45,11 @@ function App(): React.ReactElement {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     // Get the latest buses, and set up a timer to update
     clearInterval(interval.current);
-    const returnedError = await getBuses(postcode);
+    const returnedError = await getBuses(postcode, numberOfStops);
     console.log(postcode !== "" && error == "");
     if (postcode !== "" && returnedError == "") {
       interval.current = setInterval(() => {
-        getBuses(postcode);
+        getBuses(postcode, numberOfStops);
       }, 5000)
     }
     // getBuses(postcode);
@@ -57,7 +57,7 @@ function App(): React.ReactElement {
     //setTableData(data);
   }
 
-  async function getBuses(postcode: string): Promise<string> {
+  async function getBuses(postcode: string, numberOfStops: string): Promise<string> {
     // console.log(postcode);
     setLoading(true);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
