@@ -27,10 +27,10 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<string>("");
-    const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const interval: any = useRef(undefined);
+  const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
 
   useEffect(() => {
     if (error !== "") {
