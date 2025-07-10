@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
+import 'bootstrap/dist/css/bootstrap.css';
 
 const StopComponent = async (stopData: StopData): Promise<React.ReactElement> => {
 
   const arrivals = await stopData.getNextArrivals();
 
   return <>
-    <div style={{backgroundColor: "red", width: "25%", height: "40%"}}>
+    <div style={{backgroundColor: "red"}}>
       <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from [POSTCODE]</p>
       <table>
         <tr>
@@ -70,10 +71,14 @@ function App(): React.ReactElement {
       </form>
     </center>
     <center>
-      <div style={{padding: "5px"}}>
-        {stops.map(stop =>
-            stop
+      <div style={{padding: "5px"}} className={"container"}>
+        <div className={"row"}>
+        {stops.map((stop, index) =>
+              <div className={"col-4"}>
+                  {stop}
+              </div>
         )}
+        </div>
       </div>
     </center>
   </>
