@@ -27,17 +27,17 @@ function App(): React.ReactElement {
   const [tableData, setTableData] = useState<string>("");
   const [stops, setStops] = useState<React.ReactElement[]>([]);
 
-  useEffect(() => {
+  function formHandler(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault(); // to stop the form refreshing the page when it submits
+    // Get the latest buses, and set up a timer to update
+    getBuses(postcode);
     if (postcode !== "") {
-      setTimeout(() => {
+      setInterval(() => {
         getBuses(postcode);
       }, 5000)
     }
-  })
+    // getBuses(postcode);
 
-  async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault(); // to stop the form refreshing the page when it submits
-    await getBuses(postcode);
     //const data = await getBuses(postcode);
     //setTableData(data);
   }
