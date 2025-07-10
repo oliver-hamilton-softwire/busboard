@@ -1,24 +1,26 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
+import 'bootstrap/dist/css/bootstrap.css';
 
 const StopComponent = async (stopData: StopData): Promise<React.ReactElement> => {
 
   const arrivals = await stopData.getNextArrivals();
 
   return <>
-    <p>{stopData.getName()}</p>
-    <p>{stopData.getDistance()}</p>
-    <table>
-      <tr>
-        <th>Line ID</th>
-        <th>Destination</th>
-        <th>Expected arrival time</th>
-      </tr>
-    {arrivals.map(arrival => {
-          return <tr><td>{arrival.getLineId()}</td> <td>{arrival.getDestinationName()}</td> <td>{arrival.getArrivalTime().toTimeString().slice(0, 8)}</td></tr>
-    }
-    )}
-    </table>
+    <div>
+      <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from [POSTCODE]</p>
+      <table>
+        <tr>
+          <th>Line ID</th>
+          <th>Destination</th>
+          <th>Expected arrival time</th>
+        </tr>
+      {arrivals.map(arrival => {
+            return <tr><td>{arrival.getLineId()}</td> <td>{arrival.getDestinationName()}</td> <td>{arrival.getArrivalTime().toTimeString().slice(0, 8)}</td></tr>
+      }
+      )}
+      </table>
+    </div>
   </>
 }
 
@@ -59,7 +61,6 @@ function App(): React.ReactElement {
     const [stopData, error] = await fetchData(postcode);
     setError(error);
     const stopComponents: Map<number, React.ReactElement> = stops;
-    var outputString = "";
     for (var _stop of stopData) {
       stopComponents.set(_stop.getStopId(), await StopComponent(_stop));
     }
@@ -73,16 +74,30 @@ function App(): React.ReactElement {
   }
 
   return <>
-    <h1> BusBoard </h1>
-    <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode}/>
-      <input type="submit" value="Add"/>
-      {loading &&
-    <div className="spinner-border spinner-border-sm"></div>
-    }
-    </form>
-    {Array.from(stops.values())}
+    <center>
+      <h1> BusBoard</h1>
+      <form action="" onSubmit={formHandler}>
+        <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode </label>
+        <input style={{display: "block"}} type="text" id="postcodeInput" onChange={updatePostcode}/>
+        <input type="submit" value="Add"/>{loading &&
+        <div className="spinner-border spinner-border-sm"></div>
+        }
+      </form>
+    </center>
+    <center>
+      <div style={{padding: "5px"}} className={"container"}>
+          {
+              loading ? <p>Loading...</p> :
+                  <div className={"row justify-content-center"} style={{padding: "10px"}}>
+                      {Array.from(stops.values()).map((stop, index) =>
+                          <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
+                              {stop}
+                          </div>
+                      )}
+                  </div>
+          }
+      </div>
+    </center>
   </>
 }
 
