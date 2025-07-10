@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
 import 'bootstrap/dist/css/bootstrap.css';
+import {navBar} from "./navbar.jsx";
 
 const StopComponent = async (stopData: StopData, postcode: string): Promise<React.ReactElement> => {
 
@@ -80,6 +81,8 @@ function App(): React.ReactElement {
   }
 
   return <>
+    {navBar()}
+
     <center>
       <h1>&#128652; BusBoard</h1>
       <form action="" onSubmit={formHandler}>
