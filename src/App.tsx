@@ -27,6 +27,7 @@ function App(): React.ReactElement {
   const [tableData, setTableData] = useState<string>("");
   const [stops, setStops] = useState<React.ReactElement[]>([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const interval: any = useRef(undefined);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ function App(): React.ReactElement {
 
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
+    setLoading(true);
     // Get the latest buses, and set up a timer to update
     clearInterval(interval.current);
     const error = await getBuses(postcode);
@@ -46,6 +48,7 @@ function App(): React.ReactElement {
         getBuses(postcode);
       }, 5000)
     }
+    setLoading(false);
     // getBuses(postcode);
     //const data = await getBuses(postcode);
     //setTableData(data);
@@ -76,9 +79,10 @@ function App(): React.ReactElement {
       <input type="text" id="postcodeInput" onChange={updatePostcode}/>
       <input type="submit" value="Submit"/>
     </form>
-    {stops.map(stop =>
-      stop
-    )}
+    {loading ?
+     <p>Loading...</p> :
+    stops
+    }
     {JSON.stringify(tableData, null, 4) /* this will just render the string - try creating a table 'dynamically'! */}
   </>
 }
