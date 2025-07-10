@@ -7,7 +7,7 @@ const StopComponent = async (stopData: StopData): Promise<React.ReactElement> =>
   const arrivals = await stopData.getNextArrivals();
 
   return <>
-    <div style={{backgroundColor: "red"}}>
+    <div>
       <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from [POSTCODE]</p>
       <table>
         <tr>
@@ -72,9 +72,9 @@ function App(): React.ReactElement {
     </center>
     <center>
       <div style={{padding: "5px"}} className={"container"}>
-        <div className={"row"}>
+        <div className={"row justify-content-center"} style={{padding: "10px"}}>
         {stops.map((stop, index) =>
-              <div className={"col-4"}>
+              <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
                   {stop}
               </div>
         )}
