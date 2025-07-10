@@ -26,7 +26,7 @@ const StopComponent = async (stopData: StopData, postcode: string): Promise<Reac
 
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
-  const [numberOfStops, setNumberOfStops] = useState<number>(2);
+  const [numberOfStops, setNumberOfStops] = useState<string>("2");
 
   const [tableData, setTableData] = useState<string>("");
   const [error, setError] = useState("");
@@ -60,7 +60,7 @@ function App(): React.ReactElement {
     // console.log(postcode);
     setLoading(true);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
-    const [stopData, error] = await fetchData(postcode, numberOfStops);
+    const [stopData, error] = await fetchData(postcode, +numberOfStops);
     setError(error);
     const stopComponents: Map<number, React.ReactElement> = stops;
     for (var _stop of stopData) {
@@ -76,7 +76,7 @@ function App(): React.ReactElement {
   }
 
   function updateNumberOfStops(data: React.ChangeEvent<HTMLInputElement>): void {
-    setNumberOfStops(+data.target.value);
+    setNumberOfStops(data.target.value);
   }
 
   return <>
