@@ -35,19 +35,19 @@ function App(): React.ReactElement {
   const interval: any = useRef(undefined);
   const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
 
-  useEffect(() => {
-    if (error !== "") {
-      alert(error);
-    }
-  }, [error])
+  // useEffect(() => {
+  //   if (error !== "") {
+  //     alert(error);
+  //   }
+  // }, [error, loading])
 
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     // Get the latest buses, and set up a timer to update
     clearInterval(interval.current);
-    const error = await getBuses(postcode);
+    const returnedError = await getBuses(postcode);
     console.log(postcode !== "" && error == "");
-    if (postcode !== "" && error == "") {
+    if (postcode !== "" && returnedError == "") {
       interval.current = setInterval(() => {
         getBuses(postcode);
       }, 5000)
@@ -61,15 +61,15 @@ function App(): React.ReactElement {
     // console.log(postcode);
     setLoading(true);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
-    const [stopData, error] = await fetchData(postcode, +numberOfStops);
-    setError(error);
+    const [stopData, returnedError] = await fetchData(postcode, +numberOfStops);
+    setError(returnedError);
     const stopComponents: Map<number, React.ReactElement> = stops;
     for (var _stop of stopData) {
       stopComponents.set(_stop.getStopId(), await StopComponent(_stop, postcode));
     }
     setStops(stopComponents);
     setLoading(false);
-    return error;
+    return returnedError;
   }
 
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
@@ -88,6 +88,7 @@ function App(): React.ReactElement {
       <form action="" onSubmit={formHandler}>
         <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode:</label>
         <input style={{display: "block"}} type="text" id="postcodeInput" onChange={updatePostcode}/>
+        {error != "" && <p style={{color: 'red'}}>{error}</p>}
         <label style={{display: "block"}} htmlFor="postcodeInput"> Max number of stops:</label>
         <input style={{display: "block"}} type="text" id="postcodeInput" value={numberOfStops} onChange={updateNumberOfStops}/>
         <input style={{margin: '5px'}} type="submit" value="Add"/>{loading &&
@@ -98,7 +99,6 @@ function App(): React.ReactElement {
     <center>
       <div style={{padding: "5px"}} className={"container"}>
           {
-              loading ? <p>Loading...</p> :
                   <div className={"row justify-content-center"} style={{padding: "10px"}}>
                       {Array.from(stops.values()).map((stop, index) =>
                           <div className={"col-md-3 col-sm-12 card"} style={{backgroundColor: "#fc5238", minHeight: "300px", padding: "10px", margin: "10px"}}>
