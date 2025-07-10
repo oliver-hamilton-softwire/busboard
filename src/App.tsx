@@ -26,6 +26,8 @@ const StopComponent = async (stopData: StopData, postcode: string): Promise<Reac
 
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
+  const [numberOfStops, setNumberOfStops] = useState<number>(2);
+
   const [tableData, setTableData] = useState<string>("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ function App(): React.ReactElement {
     // console.log(postcode);
     setLoading(true);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
-    const [stopData, error] = await fetchData(postcode);
+    const [stopData, error] = await fetchData(postcode, numberOfStops);
     setError(error);
     const stopComponents: Map<number, React.ReactElement> = stops;
     for (var _stop of stopData) {
@@ -70,16 +72,22 @@ function App(): React.ReactElement {
   }
 
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
-    setPostcode(data.target.value)
+    setPostcode(data.target.value);
+  }
+
+  function updateNumberOfStops(data: React.ChangeEvent<HTMLInputElement>): void {
+    setNumberOfStops(+data.target.value);
   }
 
   return <>
     <center>
       <h1>&#128652; BusBoard</h1>
       <form action="" onSubmit={formHandler}>
-        <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode </label>
+        <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode:</label>
         <input style={{display: "block"}} type="text" id="postcodeInput" onChange={updatePostcode}/>
-        <input type="submit" value="Add"/>{loading &&
+        <label style={{display: "block"}} htmlFor="postcodeInput"> Max number of stops:</label>
+        <input style={{display: "block"}} type="text" id="postcodeInput" value={numberOfStops} onChange={updateNumberOfStops}/>
+        <input style={{margin: '5px'}} type="submit" value="Add"/>{loading &&
         <div className="spinner-border spinner-border-sm"></div>
         }
       </form>
