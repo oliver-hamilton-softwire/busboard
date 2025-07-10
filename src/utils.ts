@@ -67,10 +67,10 @@ const getPostcodeData = async (postcode: string) => {
     return await postcodeResponse.json();
 }
 
-const getNearestStops = async (lat: number, long: number) => {
+const getNearestStops = async (lat: number, long: number, numberOfStops: number) => {
     const stopsResponse = await fetch(`https://api.tfl.gov.uk/StopPoint/?lat=${lat}&lon=${long}&stopTypes=NaptanPublicBusCoachTram&app_key=${APP_KEY}`);
     const stopsJson = await stopsResponse.json();
-    return stopsJson.stopPoints.slice(0, NUMBER_OF_STOPS);
+    return stopsJson.stopPoints.slice(0, numberOfStops);
 }
 
 const getUpcomingBuses = async (stopId: number) => {
@@ -80,14 +80,14 @@ const getUpcomingBuses = async (stopId: number) => {
     return nextBusesJson;
 }
 
-export const fetchData = async (postcode: string): Promise<[StopData[], string]> => {
+export const fetchData = async (postcode: string, numberOfStops: number): Promise<[StopData[], string]> => {
     //const postcode: string = readlineSync.question('Enter postcode: ');
     let postcodeJson;
     postcodeJson = await getPostcodeData(postcode);
     if ('error' in postcodeJson) {
         return [[], postcodeJson.error];
     }
-    const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude);
+    const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude, numberOfStops);
 
     var stopJSON: StopData[] = [];
 
