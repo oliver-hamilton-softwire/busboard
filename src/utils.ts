@@ -76,43 +76,41 @@ const getUpcomingBuses = async (stopId: number) => {
     return nextBusesJson;
 }
 
-export const fetchData = async (postcode: string): Promise<any> => {
-    try {
-        //const postcode: string = readlineSync.question('Enter postcode: ');
-        const postcodeJson = await getPostcodeData(postcode);
-        const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude);
-
-        var stopJSON: StopData[] = [];
-
-        for (const stop of stops) {
-            var stopData: StopData = new StopData(stop.commonName, stop.distance, stop.naptanId);
-
-            //console.log(`Buses at ${stop.commonName} (${Math.round(stop.distance)} metres away):`);
-            // const nextBuses = await getUpcomingBuses(stop.naptanId);
-
-            // for (const busJson of nextBuses.slice(0, BUSES_PER_STOP)) {
-            //     const busDate: Date = new Date(busJson.expectedArrival);
-            //
-            //     var busData = {
-            //         lineId: busJson.lineId,
-            //         destinationName: busJson.destinationName,
-            //         arrivalTime: busDate
-            //     }
-            //
-            //     stopData.buses.push(busData);
-            //     //console.log(`Line ${busJson.lineId} to ${busJson.destinationName} expected at ${busDate.toTimeString().slice(0,8)}`);
-            // }
-            stopJSON.push(stopData);
-
-            // return stopData;
-            //console.log();
-        }
-        return stopJSON;
-    } catch (error) {
-        console.error(error);
-    } finally {
-        console.log("Request complete");
+export const fetchData = async (postcode: string): Promise<[StopData[], string]> => {
+    //const postcode: string = readlineSync.question('Enter postcode: ');
+    let postcodeJson;
+    postcodeJson = await getPostcodeData(postcode);
+    if ('error' in postcodeJson) {
+        return [[], postcodeJson.error];
     }
+    const stops = await getNearestStops(postcodeJson.result.latitude, postcodeJson.result.longitude);
+
+    var stopJSON: StopData[] = [];
+
+    for (const stop of stops) {
+        var stopData: StopData = new StopData(stop.commonName, stop.distance, stop.naptanId);
+
+        //console.log(`Buses at ${stop.commonName} (${Math.round(stop.distance)} metres away):`);
+        // const nextBuses = await getUpcomingBuses(stop.naptanId);
+
+        // for (const busJson of nextBuses.slice(0, BUSES_PER_STOP)) {
+        //     const busDate: Date = new Date(busJson.expectedArrival);
+        //
+        //     var busData = {
+        //         lineId: busJson.lineId,
+        //         destinationName: busJson.destinationName,
+        //         arrivalTime: busDate
+        //     }
+        //
+        //     stopData.buses.push(busData);
+        //     //console.log(`Line ${busJson.lineId} to ${busJson.destinationName} expected at ${busDate.toTimeString().slice(0,8)}`);
+        // }
+        stopJSON.push(stopData);
+
+        // return stopData;
+        //console.log();
+    }
+    return [stopJSON, ""];
 }
 
 //fetchData();

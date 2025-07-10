@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -28,33 +28,43 @@ function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<string>("");
   const [stops, setStops] = useState<React.ReactElement[]>([]);
+  const [error, setError] = useState("");
+  const interval: any = useRef(undefined);
 
-  function formHandler(event: React.FormEvent<HTMLFormElement>): void {
+  useEffect(() => {
+    if (error !== "") {
+      alert(error);
+    }
+  }, [error])
+
+  async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     // Get the latest buses, and set up a timer to update
-    getBuses(postcode);
-
-    if (postcode !== "") {
-      setInterval(() => {
+    clearInterval(interval.current);
+    const error = await getBuses(postcode);
+    console.log(postcode !== "" && error == "");
+    if (postcode !== "" && error == "") {
+      interval.current = setInterval(() => {
         getBuses(postcode);
       }, 5000)
     }
     // getBuses(postcode);
-
     //const data = await getBuses(postcode);
     //setTableData(data);
   }
 
-  async function getBuses(postcode: string): Promise<void> {
+  async function getBuses(postcode: string): Promise<string> {
     // console.log(postcode);
     // very basic testing string, you'll likely return a list of strings or JSON objects instead!
-    const stopData: StopData[] = await fetchData(postcode);
+    const [stopData, error] = await fetchData(postcode);
+    setError(error);
     const stopComponents: React.ReactElement[] = [];
     var outputString = "";
     for (var _stop of stopData) {
       stopComponents.push(await StopComponent(_stop));
     }
     setStops(stopComponents);
+    return error;
   }
 
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
