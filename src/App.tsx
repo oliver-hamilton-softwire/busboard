@@ -75,7 +75,7 @@ function App(): React.ReactElement {
 
   return <>
     <center>
-      <h1> BusBoard</h1>
+      <h1>&#128652; BusBoard</h1>
       <form action="" onSubmit={formHandler}>
         <label style={{display: "block"}} htmlFor="postcodeInput"> Postcode </label>
         <input style={{display: "block"}} type="text" id="postcodeInput" onChange={updatePostcode}/>
