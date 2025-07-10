@@ -32,35 +32,24 @@ function App(): React.ReactElement {
   const [tableData, setTableData] = useState<string>("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const interval: any = useRef(undefined);
+  const intervals: any = useRef<Map<string, any>>(new Map<string, any>);
   const [stops, setStops] = useState<Map<number, React.ReactElement>>(new Map<number, React.ReactElement>);
-
-  // useEffect(() => {
-  //   if (error !== "") {
-  //     alert(error);
-  //   }
-  // }, [error, loading])
 
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     // Get the latest buses, and set up a timer to update
-    clearInterval(interval.current);
+    clearInterval(intervals.current[postcode]);
     const returnedError = await getBuses(postcode, numberOfStops);
     console.log(postcode !== "" && error == "");
     if (postcode !== "" && returnedError == "") {
-      interval.current = setInterval(() => {
+      intervals.current[postcode] = setInterval(() => {
         getBuses(postcode, numberOfStops);
       }, 5000)
     }
-    // getBuses(postcode);
-    //const data = await getBuses(postcode);
-    //setTableData(data);
   }
 
   async function getBuses(postcode: string, numberOfStops: string): Promise<string> {
-    // console.log(postcode);
     setLoading(true);
-    // very basic testing string, you'll likely return a list of strings or JSON objects instead!
     const [stopData, returnedError] = await fetchData(postcode, +numberOfStops);
     setError(returnedError);
     const stopComponents: Map<number, React.ReactElement> = stops;
