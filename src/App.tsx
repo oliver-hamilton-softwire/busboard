@@ -2,13 +2,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
 import 'bootstrap/dist/css/bootstrap.css';
 
-const StopComponent = async (stopData: StopData): Promise<React.ReactElement> => {
+const StopComponent = async (stopData: StopData, postcode: string): Promise<React.ReactElement> => {
 
   const arrivals = await stopData.getNextArrivals();
 
   return <>
     <div>
-      <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from [POSTCODE]</p>
+      <p>{stopData.getName()} - {Math.round(stopData.getDistance())} metres from {postcode}</p>
       <table>
         <tr>
           <th>Line ID</th>
@@ -62,7 +62,7 @@ function App(): React.ReactElement {
     setError(error);
     const stopComponents: Map<number, React.ReactElement> = stops;
     for (var _stop of stopData) {
-      stopComponents.set(_stop.getStopId(), await StopComponent(_stop));
+      stopComponents.set(_stop.getStopId(), await StopComponent(_stop, postcode));
     }
     setStops(stopComponents);
     setLoading(false);
