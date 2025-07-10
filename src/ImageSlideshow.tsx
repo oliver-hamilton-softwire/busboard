@@ -28,16 +28,16 @@ const ImageSlideshow = () => {
     }
 
 
-    return <>
+    return <div style={{textAlign: 'center', margin: '10px'}}>
         <h2>{images[counter].title}</h2>
         <p>{images[counter].year}</p>
         <img src={images[counter].imageurl} width="600px"></img>
         <p>{images[counter].caption}</p>
-        <span>
-            <button onClick={decrementCounter} disabled={counter == 0}>Previous</button>
+        <div style={{textAlign: 'center'}}>
+            <button style={{marginRight: '50px'}} onClick={decrementCounter} disabled={counter == 0}>Previous</button>
             <button onClick={incrementCounter} disabled={counter == images.length - 1}>Next</button>
-        </span>
-    </>
+        </div>
+    </div>
 }
 
 export default ImageSlideshow;
