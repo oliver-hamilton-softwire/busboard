@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ArrivalData, fetchData, StopData} from "./utils";
 import 'bootstrap/dist/css/bootstrap.css';
-import {navBar} from "./navbar.js";
+import {navBar} from "./navbar";
 
 const StopComponent = async (stopData: StopData, postcode: string): Promise<React.ReactElement> => {
 

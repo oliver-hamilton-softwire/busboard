@@ -1,6 +1,6 @@
 import React from "react";
 import ImageSlideshow from "./ImageSlideshow";
-import {navBar} from "./navbar.js";
+import {navBar} from "./navbar";
 
 function History(): React.ReactElement {
     return <>
