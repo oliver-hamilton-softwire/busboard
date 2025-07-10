@@ -20,13 +20,13 @@ const ImageSlideshow = () => {
             title: 'iBus',
             year: 2009,
             imageurl: 'https://alchetron.com/cdn/ibus-london-e3a5cd17-b7ec-4eeb-957d-17d1069ae3c-resize-750.jpg',
-            caption: 'Roll out of iBus, providing Nextstop audio and signs and live information on apps and the web'
+            caption: 'Roll out of iBus, providing Nextstop audio and signs and live information on apps and the web.'
         },
         {
             title: 'TfL Go',
             year: 2021,
             imageurl: 'https://tfl.gov.uk/cdn/static/cms/images/promos/tfl-go-jp_rdax_400x300.jpg',
-            caption: 'The first journey planning app released by TfL'
+            caption: 'The first journey planning app released by TfL.'
         }
         
     ];
